@@ -146,10 +146,7 @@ main() {
 
 	KEEPALIVE_URL=$(remove_substr "$html" "*location.href=\"" "\";*")
 
-	# Logout on exit
-	trap "cleanup" EXIT
-
-	keepalive
+	cleanup
 }
 
 main "$@"
