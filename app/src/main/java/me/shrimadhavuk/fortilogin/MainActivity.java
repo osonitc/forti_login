@@ -6,6 +6,7 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -28,7 +37,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,18 +47,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.NameValuePair;
-import cz.msebera.android.httpclient.client.ClientProtocolException;
-import cz.msebera.android.httpclient.client.HttpClient;
-import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
-import cz.msebera.android.httpclient.client.methods.HttpPost;
-import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
-import cz.msebera.android.httpclient.message.BasicNameValuePair;
-import cz.msebera.android.httpclient.params.BasicHttpParams;
-import cz.msebera.android.httpclient.params.HttpConnectionParams;
-import cz.msebera.android.httpclient.params.HttpParams;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -171,66 +170,110 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("username", username);
         editor.putString("password", password);
         editor.commit();
-        Log.i(tag, "saved");
+        //Log.i(tag, "saved");
 
-        new Thread() {
-            public void run() {
+//        new Thread() {
+//            public void run() {
+//                FortinetActions();
+//            }
+//        }.start();
+
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
                 FortinetActions();
+                return null;
             }
-        }.start();
+        }.execute();
 
     }
 
-    private void FortinetActions() {
-        String realurl = "http://shrimadhavuk.me";
+    public void FortinetActions() {
+        String realurl = "http://www.gh.com";
         String str = openHttpConnection(realurl);
+        Log.i(tag, str);
         keepalivestr = str.replaceAll("fgtauth", "keepalive");
+        Log.i(tag, keepalivestr);
         String[] a = str.split("\\?", 2);
         String[] b = str.split("fgtauth", 2);
         String realstr = b[0];
+        Log.i(tag, realstr);
         String magic = a[1];
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         username = sharedpreferences.getString("username", "null");
         password = sharedpreferences.getString("password", "null");
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        HttpPost httpPost = new HttpPost(realurl);
+        HashMap<String, String> hm = new HashMap<String, String>();
+        hm.put("4Tredir","shrimadhavuk.me");
+        hm.put("magic",magic);
+        hm.put("username",username);
+        hm.put("password",password);
+        String r = performPostCall(realurl,hm);
+        Log.i(tag, "tst"+r);
+//        String qryLst = null;
+//        try {
+//            qryLst = URLEncoder.encode("4Tredir","UTF-8") + "=" +
+//                    "" + URLEncoder.encode("shrimadhavuk.me","UTF-8") + "&" + URLEncoder.encode("magic","UTF-8") + "=" +
+//                    "" + URLEncoder.encode(magic,"UTF-8") + "&" + URLEncoder.encode("username","UTF-8") + "=" +
+//                    "" + URLEncoder.encode(username,"UTF-8") + "&" + URLEncoder.encode("password","UTF-8") + "=" +
+//                    "" + URLEncoder.encode(password,"UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        Log.i(tag, qryLst);
+        //if(qryLst != null) {
+            //String r = excutePost(str, qryLst);
+//            try {
+//                int re = 1;
+//
+////                    URL url = new URL(realstr);
+//                    URL url = new URL("http://www.google.com");
+//
+//
+//                    HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+//                    httpConn.setReadTimeout(10000);
+//                    httpConn.setConnectTimeout(15000);
+//                    httpConn.setRequestMethod("POST");
+//                    httpConn.setDoInput(true);
+//                    httpConn.setDoOutput(true);
+////
+////                    OutputStream os = httpConn.getOutputStream();
+////                    BufferedWriter writer = new BufferedWriter(
+////                            new OutputStreamWriter(os, "UTF-8"));
+////                    writer.write(qryLst);
+////                    writer.flush();
+////                    writer.close();
+//
+//                     httpConn.connect();
+//
+//                    DataInputStream dis = new DataInputStream(httpConn.getInputStream());
+//                    Log.d("out",dis.readLine());
+//
+//                    //os.close();
+//
+//                    // httpConn.setAllowUserInteraction(false);
+//                    //  httpConn.setInstanceFollowRedirects(false);
+//
+//                    re = httpConn.getContentLength();
+//
+//                Log.i(tag, ""+re);
+//
+//            }
+//
+//            catch (MalformedURLException e) {
+//                 e.printStackTrace();
+//            }
+//
+//            catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+////        }
+////        else{
+////            Log.i(tag, "this will never appear");
+////        }
 
-        List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(2);
-        nameValuePair.add(new BasicNameValuePair("4Tredir", realurl));
-        nameValuePair.add(new BasicNameValuePair("magic", magic));
-        nameValuePair.add(new BasicNameValuePair("username", username));
-        nameValuePair.add(new BasicNameValuePair("password", password));
-
-            /*
-            String qryLst = URLEncoder.encode("4Tredir","UTF-8") + "=" +
-                    "" + URLEncoder.encode(realurl,"UTF-8") + "&" + URLEncoder.encode("magic","UTF-8") + "=" +
-                    "" + URLEncoder.encode(magic,"UTF-8") + "&" + URLEncoder.encode("username","UTF-8") + "=" +
-                    "" + URLEncoder.encode(username,"UTF-8") + "&" + URLEncoder.encode("password","UTF-8") + "=" +
-                    "" + URLEncoder.encode(password,"UTF-8");
-            */
-
-        //Encoding POST data
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
-            HttpResponse response = httpClient.execute(httpPost);
-            // write response to log
-            Log.d("Http Post Response:", response.toString());
-
-        } catch (UnsupportedEncodingException e) {
-            // e.printStackTrace();
-            Log.i(tag, "unsup_encoding");
-        }
-        catch (ClientProtocolException e) {
-            // Log exception
-           // e.printStackTrace();
-            Log.i(tag,"cpeerror");
-        } catch (IOException e) {
-            // Log exception
-            e.printStackTrace();
-            Log.i(tag, "ioexception");
-        }
 
     }
 
@@ -268,4 +311,67 @@ public class MainActivity extends AppCompatActivity {
         }
     }*/
 
+
+    public String  performPostCall(String requestURL,
+                                   HashMap<String, String> postDataParams) {
+
+        URL url;
+        String response = "";
+        try {
+            url = new URL(requestURL);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(getPostDataString(postDataParams));
+
+            writer.flush();
+            writer.close();
+            os.close();
+            int responseCode=conn.getResponseCode();
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line=br.readLine()) != null) {
+                    response+=line;
+                }
+            }
+            else {
+                response="";
+                Log.i(tag, "r");
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
+    private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException{
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for(Map.Entry<String, String> entry : params.entrySet()){
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
 }
