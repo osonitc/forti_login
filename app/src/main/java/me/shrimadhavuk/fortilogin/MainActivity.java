@@ -81,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
             userPass.setText(password);
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();  // Always call the superclass method first
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, 0, 2400000);
+
     }
 
     private String convertStreamToString(java.io.InputStream is) {
@@ -170,13 +177,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("username", username);
         editor.putString("password", password);
         editor.commit();
-        //Log.i(tag, "saved");
-
-//        new Thread() {
-//            public void run() {
-//                FortinetActions();
-//            }
-//        }.start();
 
         new AsyncTask<Void, Void, Void>(){
             @Override
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void FortinetActions() {
-        String realurl = "http://www.gh.com";
+        String realurl = "http://shrimadhavuk.me";
         String str = openHttpConnection(realurl);
         Log.i(tag, str);
         keepalivestr = str.replaceAll("fgtauth", "keepalive");
@@ -199,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
         String realstr = b[0];
         Log.i(tag, realstr);
         String magic = a[1];
+        Log.i(tag, magic);
+
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         username = sharedpreferences.getString("username", "null");
         password = sharedpreferences.getString("password", "null");
@@ -209,8 +211,9 @@ public class MainActivity extends AppCompatActivity {
         hm.put("magic",magic);
         hm.put("username",username);
         hm.put("password",password);
-        String r = performPostCall(realurl,hm);
+        String r = performPostCall(realstr,hm);
         Log.i(tag, "tst"+r);
+
 //        String qryLst = null;
 //        try {
 //            qryLst = URLEncoder.encode("4Tredir","UTF-8") + "=" +
@@ -222,58 +225,6 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 //        Log.i(tag, qryLst);
-        //if(qryLst != null) {
-            //String r = excutePost(str, qryLst);
-//            try {
-//                int re = 1;
-//
-////                    URL url = new URL(realstr);
-//                    URL url = new URL("http://www.google.com");
-//
-//
-//                    HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-//                    httpConn.setReadTimeout(10000);
-//                    httpConn.setConnectTimeout(15000);
-//                    httpConn.setRequestMethod("POST");
-//                    httpConn.setDoInput(true);
-//                    httpConn.setDoOutput(true);
-////
-////                    OutputStream os = httpConn.getOutputStream();
-////                    BufferedWriter writer = new BufferedWriter(
-////                            new OutputStreamWriter(os, "UTF-8"));
-////                    writer.write(qryLst);
-////                    writer.flush();
-////                    writer.close();
-//
-//                     httpConn.connect();
-//
-//                    DataInputStream dis = new DataInputStream(httpConn.getInputStream());
-//                    Log.d("out",dis.readLine());
-//
-//                    //os.close();
-//
-//                    // httpConn.setAllowUserInteraction(false);
-//                    //  httpConn.setInstanceFollowRedirects(false);
-//
-//                    re = httpConn.getContentLength();
-//
-//                Log.i(tag, ""+re);
-//
-//            }
-//
-//            catch (MalformedURLException e) {
-//                 e.printStackTrace();
-//            }
-//
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-////        }
-////        else{
-////            Log.i(tag, "this will never appear");
-////        }
-
 
     }
 
@@ -323,7 +274,9 @@ public class MainActivity extends AppCompatActivity {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
+            conn.setAllowUserInteraction(false);
+            conn.setInstanceFollowRedirects(false);
+            conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
