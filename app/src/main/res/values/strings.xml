@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Forti Login</string>
+</resources>
+<resources>
+    <string name="username_label">username: </string>
 </resources>

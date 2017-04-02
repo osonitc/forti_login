@@ -72,12 +72,12 @@ public class MainActivity extends AppCompatActivity {
         userTxt = (EditText) findViewById(R.id.editText1);
         userPass = (EditText) findViewById(R.id.editText2);
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username","null");
-        password = sharedpreferences.getString("password","null");
-        if(username != "null") {
+        username = sharedpreferences.getString("username",null);
+        password = sharedpreferences.getString("password", null);
+        if(username != null) {
             userTxt.setText(username);
         }
-        if(password != "null") {
+        if(password != null) {
             userPass.setText(password);
         }
 
@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
         Log.i(tag, magic);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        username = sharedpreferences.getString("username", "null");
-        password = sharedpreferences.getString("password", "null");
+        username = sharedpreferences.getString("username", null);
+        password = sharedpreferences.getString("password", null);
 
 
         HashMap<String, String> hm = new HashMap<String, String>();
@@ -328,3 +328,4 @@ public class MainActivity extends AppCompatActivity {
         return result.toString();
     }
 }
+
